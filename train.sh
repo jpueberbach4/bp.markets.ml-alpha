@@ -5,11 +5,11 @@ rm -rf ./checkpoints/feature_routed/*
 ./venv/bin/python train.py
 
 # Extract the checkpoint with the highest F1 score
-BEST_CHECKPOINT=$(ls ./checkpoints/feature_routed/*.pt 2>/dev/null | awk -F'_f1' '{print $2 "\t" $0}' | sort -n | tail -n 1 | cut -f2)
+BEST_CHECKPOINT=$(ls ./checkpoints/hierarchical_moe/*.pt 2>/dev/null | awk -F'_f1' '{print $2 "\t" $0}' | sort -n | tail -n 1 | cut -f2)
 
 # Check if a file was actually found
 if [ -z "$BEST_CHECKPOINT" ]; then
-    echo "Error: No checkpoints found in ./checkpoints/feature_routed/"
+    echo "Error: No checkpoints found in ./checkpoints/hierarchical_moe/"
     exit 1
 fi
 
