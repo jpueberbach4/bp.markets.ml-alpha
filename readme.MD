@@ -1,4 +1,4 @@
-Note: This is an alpha release to prove a HMoE concept.
+Note: This is an alpha release to prove a HMoE concept. Current focus is algorithmic trading but it can be used for any sparse event detection.
 
 # Hierarchical Mixture-of-Experts (MoE) Pipeline
 
@@ -164,10 +164,148 @@ This will perform some steps:
 - Verify gating and expert distribution
 - Plots the example bottom/tops detects to a web-window
 
-## 5. Future
+## 6. Future
 
 - Multihead attention will be added to get multiple outputs (eg vola info, sentiment info, ...)
 - Will be used for live-trading
+
+## 7. Example distribution
+
+```sh
+--- EXPERT ROUTING DISTRIBUTION ---
+
+NODE: [ROOT_LOCAL_FEATURES] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 05.54% | ██
+ Expert 1  | 46.87% | ███████████████████████
+ Expert 2  | 13.55% | ██████
+ Expert 3  | 34.04% | █████████████████
+
+NODE: [ROOT_ROUTER] | Total Tokens Routed: 14940
+------------------------------------------------------------
+ Expert 0  | 49.02% | ████████████████████████
+ Expert 1  | 22.22% | ███████████
+ Expert 2  | 15.72% | ███████
+ Expert 3  | 13.04% | ██████
+
+NODE: [CHOP_SQUAD] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 1  | 64.60% | ████████████████████████████████
+ Expert 5  | 34.54% | █████████████████
+ Expert 7  | 00.86% |
+
+NODE: [DETECT_BOTTOMS.CANDLESTICK] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 10.82% | █████
+ Expert 1  | 04.42% | ██
+ Expert 2  | 60.26% | ██████████████████████████████
+ Expert 3  | 01.89% |
+ Expert 4  | 00.36% |
+ Expert 5  | 07.79% | ███
+ Expert 6  | 05.48% | ██
+ Expert 7  | 08.98% | ████
+
+NODE: [DETECT_BOTTOMS.INDICATOR] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 15.98% | ███████
+ Expert 1  | 01.37% |
+ Expert 2  | 06.12% | ███
+ Expert 3  | 07.77% | ███
+ Expert 4  | 19.36% | █████████
+ Expert 5  | 17.25% | ████████
+ Expert 6  | 16.91% | ████████
+ Expert 7  | 15.24% | ███████
+
+NODE: [DETECT_BOTTOMS.RSI] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 08.53% | ████
+ Expert 1  | 14.20% | ███████
+ Expert 2  | 07.61% | ███
+ Expert 3  | 20.94% | ██████████
+ Expert 4  | 07.85% | ███
+ Expert 5  | 21.89% | ██████████
+ Expert 6  | 08.05% | ████
+ Expert 7  | 10.92% | █████
+
+NODE: [DETECT_BOTTOMS_LEAF] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 7  | 100.00% | ██████████████████████████████████████████████████
+
+NODE: [DETECT_BOTTOMS_ROUTER] | Total Tokens Routed: 14940
+------------------------------------------------------------
+ Expert 0  | 16.47% | ████████
+ Expert 1  | 13.55% | ██████
+ Expert 2  | 12.87% | ██████
+ Expert 3  | 08.98% | ████
+ Expert 4  | 18.28% | █████████
+ Expert 5  | 15.83% | ███████
+ Expert 6  | 04.89% | ██
+ Expert 7  | 09.14% | ████
+
+NODE: [DETECT_TOPS.CANDLESTICK] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 10.34% | █████
+ Expert 1  | 31.20% | ███████████████
+ Expert 2  | 01.02% |
+ Expert 3  | 00.74% |
+ Expert 4  | 15.34% | ███████
+ Expert 5  | 34.74% | █████████████████
+ Expert 6  | 00.46% |
+ Expert 7  | 06.14% | ███
+
+NODE: [DETECT_TOPS.INDICATOR] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 13.55% | ██████
+ Expert 1  | 13.09% | ██████
+ Expert 2  | 33.96% | ████████████████
+ Expert 3  | 02.15% | █
+ Expert 4  | 21.93% | ██████████
+ Expert 5  | 04.34% | ██
+ Expert 6  | 09.44% | ████
+ Expert 7  | 01.55% |
+
+NODE: [DETECT_TOPS.RSI] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 10.68% | █████
+ Expert 1  | 07.07% | ███
+ Expert 2  | 13.09% | ██████
+ Expert 3  | 09.74% | ████
+ Expert 4  | 14.62% | ███████
+ Expert 5  | 18.90% | █████████
+ Expert 6  | 08.13% | ████
+ Expert 7  | 17.77% | ████████
+
+NODE: [DETECT_TOPS_LEAF] | Total Tokens Routed: 4980
+------------------------------------------------------------
+ Expert 0  | 52.63% | ██████████████████████████
+ Expert 1  | 47.37% | ███████████████████████
+
+NODE: [DETECT_TOPS_ROUTER] | Total Tokens Routed: 14940
+------------------------------------------------------------
+ Expert 0  | 20.98% | ██████████
+ Expert 1  | 19.38% | █████████
+ Expert 2  | 12.39% | ██████
+ Expert 3  | 06.55% | ███
+ Expert 4  | 05.94% | ██
+ Expert 5  | 11.73% | █████
+ Expert 6  | 08.52% | ████
+ Expert 7  | 14.50% | ███████
+
+================================================================================
+
+--- NODE ATTENTION WEIGHTS (MACRO ROUTING) ---
+ attn_root->chop_squad                    | 00.28% |
+ attn_root->detect_bottoms                | 50.77% | █████████████████████████
+ attn_root->detect_tops                   | 48.95% | ████████████████████████
+ attn_root.detect_bottoms->candlestick    | 04.93% | ██
+ attn_root.detect_bottoms->indicator      | 19.79% | █████████
+ attn_root.detect_bottoms->rsi            | 75.28% | █████████████████████████████████████
+ attn_root.detect_tops->candlestick       | 03.97% | █
+ attn_root.detect_tops->indicator         | 20.68% | ██████████
+ attn_root.detect_tops->rsi               | 75.35% | █████████████████████████████████████
+
+================================================================================
+```
 
 # LICENSE?
 
